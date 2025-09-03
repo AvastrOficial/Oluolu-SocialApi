@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publicador Real - OluOlu BSZ 0.0.1</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    </head>
+<body>
+    <div class="container">
+        <!-- Barra de estado de conexión -->
+        <div class="connection-status-bar connected" id="connectionStatusBar">
+            <i class="fas fa-wifi"></i>
+            <span>Conectado a internet</span>
+        </div>
+
+        <!-- Modal de inicio de sesión -->
+        <div class="login-modal" id="loginModal">
+            <div class="login-content">
+                <div class="login-header">
+                    <i class="fas fa-feather-alt"></i>
+                    <h2>Iniciar Sesión en OluOlu</h2>
+                </div>
+                <div class="login-body">
+                    <div class="connection-warning" id="connectionWarning" style="display: none;">
+                        <i class="fas fa-wifi-slash"></i>
+                        <div>Estás trabajando sin conexión. Algunas funciones pueden estar limitadas.</div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="email">Correo electrónico:</label>
+                        <input type="email" id="email" placeholder="tu@email.com">
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Contraseña:</label>
+                        <input type="password" id="password" placeholder="Tu contraseña">
+                    </div>
+                    <div class="login-error" id="loginError"></div>
+
+                    <!-- Separador -->
+                    <div class="login-divider">
+                        <span>O</span>
+                    </div>
+
+                    <!-- Botón de inicio de sesión con Google -->
+                    <button class="google-login-btn" id="googleLoginBtn">
+                        <i class="fab fa-google"></i>
+                        Iniciar sesión con Google
+                    </button>
+                    
+                    <!-- Información sobre ventana emergente -->
+                    <div class="oauth-popup-info">
+                        <h3><i class="fas fa-external-link-alt"></i> Ventana emergente</h3>
+                        <p>Al hacer clic en "Iniciar sesión con Google", se abrirá una ventana emergente para completar la autenticación.</p>
+                        <p>Asegúrate de que tu navegador no bloquee las ventanas emergentes para este sitio.</p>
+                    </div>
+                </div>
+                <div class="login-footer">
+                    <button class="login-btn" id="loginBtn">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Iniciar Sesión
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <header>
+            <div class="logo">
+                <i class="fas fa-feather-alt"></i>
+                <span>Post - OluOlu Bsz 0.0.1</span>
+            </div>
+            <div class="session-info">
+                <div class="session-status status-disconnected" id="connectionStatus">
+                    <i class="fas fa-exclamation-circle"></i>
+                    No autenticado
+                </div>
+                <div class="session-id" id="sessionId">
+                    SID: [No autenticado]
+                </div>
+                <button class="logout-btn" id="logoutBtn" style="display: none;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Cerrar Sesión
+                </button>
+            </div>
+        </header>
+        
+        <!-- Consola de peticiones -->
+        <div class="console-container" id="consoleContainer">
+            <div class="console-header">
+                <div class="console-title">Consola de Peticiones</div>
+                <button class="clear-console-btn" id="clearConsoleBtn">Limpiar consola</button>
+            </div>
+            <div class="console-content" id="consoleContent">
+                <div class="log-entry">
+                    <span class="log-timestamp">[00:00:00]</span>
+                    <span class="log-message">Sistema iniciado. Esperando autenticación...</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="editor-container" id="editorContainer" style="display: none;">
+            <div class="editor-header">
+                <div>Crear nueva publicación</div>
+            </div>
+            <div class="editor-body">
+                <textarea class="editor" id="contentEditor" placeholder="Escribe tu contenido aquí..."></textarea>
+            </div>
+            <div class="editor-footer">
+                <div class="char-count" id="charCount">0 caracteres</div>
+                <button class="publish-btn" id="publishBtn" disabled>
+                    <i class="fas fa-paper-plane"></i>
+                    Publicar
+                </button>
+            </div>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
+        <div class="success-message" id="successMessage">
+            <i class="fas fa-check-circle" style="color: #4caf50; font-size: 24px;"></i>
+            <div>
+                <div>¡Publicación exitosa! Se ha creado tu blog con ID:</div>
+                <div class="blog-id" id="blogId"></div>
+                <div class="response-data" id="successResponse"></div>
+            </div>
+        </div>
+        
+        <div class="error-message" id="errorMessage">
+            <i class="fas fa-exclamation-circle" style="color: #e0245e; font-size: 24px;"></i>
+            <div>
+                <div id="errorText">Error en la publicación</div>
+                <div class="response-data" id="errorResponse"></div>
+            </div>
+        </div>
+        
+        <div class="connection-error" id="connectionError">
+            <i class="fas fa-wifi" style="color: #ffad1f; font-size: 24px;"></i>
+            <div>
+                <div id="connectionErrorText">Problemas de conexión</div>
+                <div>Verifica tu conexión a internet e intenta nuevamente.</div>
+                <div class="retry-container">
+                    <button class="retry-btn" id="retryConnectionBtn">
+                        <i class="fas fa-redo"></i>
+                        Reintentar conexión
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="debug-info" id="debugInfo">
+            <div>
+                <strong>Información de depuración</strong>
+                <div id="debugStatus">Estado: No autenticado</div>
+            </div>
+            <span class="debug-toggle" id="debugToggle">Mostrar detalles</span>
+            <div class="debug-content" id="debugContent"></div>
+        </div>
+        
+        <h2 class="phase-title" style="display: none;" id="phase1Title">
+            <i class="fas fa-pencil-alt"></i>
+            Fase 1: Creación del blog
+        </h2>
+        <div class="requests-container" style="display: none;" id="phase1Requests">
+            <div class="requests-header">
+                <i class="fas fa-exchange-alt"></i>
+                Peticiones realizadas
+            </div>
+            <div class="requests-list">
+                <div class="request-item" id="request1">
+                    <div class="request-icon">1</div>
+                    <div class="request-details">
+                        <div class="request-url">https://api2.oluolu.io/v1/blogs</div>
+                        <div>
+                            <span class="request-method method-options">OPTIONS</span>
+                            <span class="request-status status-pending"><i class="fas fa-clock"></i> Pendiente</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="request-item" id="request2">
+                    <div class="request-icon">2</div>
+                    <div class="request-details">
+                        <div class="request-url">https://api2.oluolu.io/v1/blogs</div>
+                        <div>
+                            <span class="request-method method-post">POST</span>
+                            <span class="request-status status-pending"><i class="fas fa-clock"></i> Pendiente</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <h2 class="phase-title" style="display: none;" id="phase2Title">
+            <i class="fas fa-share-square"></i>
+            Fase 2: Publicación del blog
+        </h2>
+        <div class="requests-container" style="display: none;" id="phase2Requests">
+            <div class="requests-header">
+                <i class="fas fa-exchange-alt"></i>
+                Peticiones realizadas
+            </div>
+            <div class="requests-list">
+                <div class="request-item" id="request3">
+                    <div class="request-icon">3</div>
+                    <div class="request-details">
+                        <div class="request-url">https://api2.oluolu.io/v1/blogs/ID/publish</div>
+                        <div>
+                            <span class="request-method method-options">OPTIONS</span>
+                            <span class="request-status status-pending"><i class="fas fa-clock"></i> Pendiente</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="request-item" id="request4">
+                    <div class="request-icon">4</div>
+                    <div class="request-details">
+                        <div class="request-url">https://api2.oluolu.io/v1/blogs/ID/publish</div>
+                        <div>
+                            <span class="request-method method-post">POST</span>
+                            <span class="request-status status-pending"><i class="fas fa-clock"></i> Pendiente</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <h2 class="phase-title" style="display: none;" id="phase3Title">
+            <i class="fas fa-check-double"></i>
+            Fase 3: Verificación
+        </h2>
+        <div class="requests-container" style="display: none;" id="phase3Requests">
+            <div class="requests-header">
+                <i class="fas fa-exchange-alt"></i>
+                Peticiones realizadas
+            </div>
+            <div class="requests-list">
+                <div class="request-item" id="request5">
+                    <div class="request-icon">5</div>
+                    <div class="request-details">
+                        <div class="request-url">https://api2.oluolu.io/v1/system-notifications/check</div>
+                        <div>
+                            <span class="request-method method-get">GET</span>
+                            <span class="request-status status-pending"><i class="fas fa-clock"></i> Pendiente</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </body>
+</html>
